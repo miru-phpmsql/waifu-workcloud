@@ -1,6 +1,14 @@
-# .gitignore
+# dependencies
 node_modules
+
+# Next.js build output
 .next
 out
+
+# Local environment variables (keep secrets out of Git)
+.env*
+!.env.example
+
+# logs and OS files
 npm-debug.log*
 .DS_Store
