@@ -24,6 +24,7 @@ html, body {
   color: var(--text);
 }
 
+a { color: inherit; text-decoration: none; }
 button, input { font: inherit; }
 body { min-height: 100vh; }
 
@@ -69,6 +70,7 @@ body { min-height: 100vh; }
   border-radius: 12px;
   cursor: pointer;
   transition: 0.2s ease;
+  display: block;
 }
 .nav-item.active {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(77, 212, 255, 0.12));
@@ -82,7 +84,7 @@ body { min-height: 100vh; }
 .tiny-label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 10px; letter-spacing: 0.12em; }
 
 .content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
-.topbar, .panel-head, .card-head, .cta-row, .signal-row, .task-row, .composer {
+.topbar, .panel-head, .card-head, .cta-row, .signal-row, .task-row, .composer, .login-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -98,10 +100,14 @@ body { min-height: 100vh; }
   border: 1px solid rgba(255,255,255,0.1);
   cursor: pointer;
   transition: 0.2s ease;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 .primary-btn { background: linear-gradient(135deg, var(--pink), var(--violet)); color: white; border: none; box-shadow: 0 14px 25px rgba(139, 92, 246, 0.35); }
 .primary-btn.large, .ghost-btn.large { padding: 14px 20px; }
 .ghost-btn { background: rgba(255,255,255,0.02); color: var(--text); }
+.inline-link { text-decoration: none; }
 
 .hero-panel {
   display: grid;
@@ -144,6 +150,8 @@ body { min-height: 100vh; }
 .cards-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 .info-card, .panel { background: rgba(14, 18, 31, 0.78); border: 1px solid var(--line); border-radius: 22px; padding: 18px 18px 16px; }
 .info-card h4 { margin: 14px 0 0; }
+.project-summary { color: var(--muted); margin: 14px 0 0; line-height: 1.6; }
+.card-link { text-decoration: none; color: inherit; }
 .project-badge { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
 .project-badge.cyan { background: rgba(77, 212, 255, 0.12); color: var(--cyan); }
 .project-badge.violet { background: rgba(139, 92, 246, 0.12); color: #bba7ff; }
@@ -154,7 +162,7 @@ body { min-height: 100vh; }
 
 .lower-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 20px; }
 .panel-head { margin-bottom: 18px; }
-.panel-head h4 { margin: 0; }
+.panel-head h4, .panel-head h3 { margin: 0; }
 .panel-head span { color: var(--muted); font-size: 12px; }
 .task-panel ul, .activity-list { list-style: none; padding: 0; margin: 0; }
 .task-row { padding: 14px 0; border-bottom: 1px solid var(--line); }
@@ -185,17 +193,79 @@ body { min-height: 100vh; }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 .composer button:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.inner-page-shell { align-items: flex-start; }
+.page-topbar { margin-bottom: 8px; }
+.project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.project-card { display: block; }
+.project-card h3 { margin: 0; }
+.mini-progress { width: 100%; height: 10px; margin-top: 14px; border-radius: 999px; background: rgba(255,255,255,0.05); overflow: hidden; }
+.mini-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--pink)); }
+.project-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; color: var(--muted); }
+.project-meta strong { color: var(--text); font-size: 20px; }
+
+.detail-layout { display: grid; grid-template-columns: 1.4fr 0.8fr; gap: 20px; }
+.detail-panel, .side-panel { min-height: 100%; }
+.detail-summary { color: var(--muted); line-height: 1.7; }
+.big-score-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin: 22px 0; }
+.big-score-row div { background: rgba(255,255,255,0.02); border: 1px solid var(--line); border-radius: 16px; padding: 14px 12px; }
+.big-score-row span { display: block; color: var(--muted); margin-bottom: 8px; }
+.big-score-row strong { font-size: 32px; }
+.large-progress { margin-top: 0; }
+.detail-metrics { margin-top: 24px; }
+.detail-metrics ul { padding-left: 18px; color: var(--muted); line-height: 2; }
+.info-list { display: flex; flex-direction: column; gap: 16px; }
+.info-list div { display: flex; flex-direction: column; gap: 8px; }
+.info-list span { color: var(--muted); font-size: 12px; }
+.info-list strong { font-size: 16px; }
+.empty-state {
+  width: min(560px, 90vw);
+  margin: 20vh auto 0;
+  background: rgba(14,18,31,0.8);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.login-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.login-card {
+  width: min(460px, 100%);
+  padding: 28px;
+  border-radius: 24px;
+  background: rgba(14, 18, 31, 0.82);
+  border: 1px solid var(--line);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+.login-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+.login-brand h1 { margin: 0; }
+.login-form { display: flex; flex-direction: column; gap: 18px; }
+.login-form label { display: flex; flex-direction: column; gap: 8px; color: var(--muted); }
+.login-form input {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text);
+  padding: 12px 14px;
+}
+.login-actions { margin-top: 8px; }
+
 @media (max-width: 980px) {
   .page-shell { flex-direction: column; }
   .sidebar { width: 100%; flex-basis: auto; }
-  .hero-panel, .lower-grid, .cards-grid { grid-template-columns: 1fr; }
+  .hero-panel, .lower-grid, .cards-grid, .detail-layout { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
   .page-shell { padding: 14px; gap: 16px; }
   .topbar { align-items: flex-start; flex-direction: column; }
   .topbar-actions { width: 100%; }
-  .topbar-actions button { flex: 1; }
+  .topbar-actions button, .login-actions a { flex: 1; }
   .cta-row { align-items: stretch; flex-direction: column; }
   .message { max-width: 95%; }
 }

@@ -1,15 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 
-type Project = { name: string; status: string; score: string; color: string };
+type Project = { name: string; status: string; score: string; color: string; id: string; summary: string };
 type Task = { title: string; time: string; state: "in progress" | "pending" | "done" };
 type Message = { sender: string; text: string };
 
 const initialProjects: Project[] = [
-  { name: "Aurora UI Kit", status: "review", score: "94%", color: "cyan" },
-  { name: "Neon CRM", status: "building", score: "87%", color: "violet" },
-  { name: "Moonlight API", status: "live", score: "99%", color: "pink" },
+  { id: "aurora-ui-kit", name: "Aurora UI Kit", status: "review", score: "94%", color: "cyan", summary: "Design system and onboarding polish for the workspace experience." },
+  { id: "neon-crm", name: "Neon CRM", status: "building", score: "87%", color: "violet", summary: "Customer workflow dashboard for sales and lifecycle automation." },
+  { id: "moonlight-api", name: "Moonlight API", status: "live", score: "99%", color: "pink", summary: "Shared API routing and deployment automation for app services." },
 ];
 
 const initialTasks: Task[] = [
@@ -86,7 +87,7 @@ export default function Home() {
 
   function startProject() {
     const name = `Untitled project ${projects.length + 1}`;
-    setProjects((current) => [...current, { name, status: "planning", score: "0%", color: "pink" }]);
+    setProjects((current) => [...current, { id: `project-${Date.now()}`, name, status: "planning", score: "0%", color: "pink", summary: "Fresh workspace for a new idea or delivery stream." }]);
     setActivity((current) => [`Created demo project: ${name}`, ...current].slice(0, 5));
     setNotice(`${name} added to this demo workspace.`);
     window.setTimeout(() => setNotice(""), 3500);
@@ -100,11 +101,11 @@ export default function Home() {
           <div><p className="eyebrow">WORKSPACE</p><h1>Waifu WorksCloud</h1></div>
         </div>
         <nav className="nav" aria-label="Main navigation">
-          <button className="nav-item active" onClick={() => setNotice("You’re viewing the overview demo.")}>Overview</button>
-          <button className="nav-item" onClick={() => setNotice("Projects navigation is a demo placeholder.")}>Projects</button>
-          <button className="nav-item" onClick={() => setNotice("Agent management is a demo placeholder.")}>Agents</button>
-          <button className="nav-item" onClick={() => setNotice("Deploy history is a demo placeholder.")}>Deploys</button>
-          <button className="nav-item" onClick={() => setNotice("Settings are a demo placeholder.")}>Settings</button>
+          <Link href="/" className="nav-item active">Overview</Link>
+          <Link href="/projects" className="nav-item">Projects</Link>
+          <Link href="/login" className="nav-item">Agents</Link>
+          <Link href="/projects" className="nav-item">Deploys</Link>
+          <Link href="/login" className="nav-item">Settings</Link>
         </nav>
         <div className="mini-card accent">
           <span className="tiny-label">DEMO STATUS</span>
@@ -131,7 +132,7 @@ export default function Home() {
             <p>Organize coding tasks, follow agent activity, and review work in one friendly workspace. This prototype currently runs with local demo data.</p>
             <div className="cta-row">
               <button className="primary-btn large" onClick={startProject}>Start project</button>
-              <button className="ghost-btn large" onClick={() => setNotice("Demo mode: no external coding agent is connected yet.")}>View demo</button>
+              <Link href="/projects" className="ghost-btn large inline-link">View demo</Link>
             </div>
           </div>
           <div className="hero-card">
@@ -146,11 +147,12 @@ export default function Home() {
 
         <div className="cards-grid">
           {projects.map((project) => (
-            <div key={project.name} className="info-card">
+            <Link key={project.name} href={`/projects/${project.id}`} className="info-card card-link">
               <div className="card-head"><span className={`project-badge ${project.color}`}>{project.status}</span><span className="score">{project.score}</span></div>
               <h4>{project.name}</h4>
+              <p className="project-summary">{project.summary}</p>
               <div className="progress-bar"><span style={{ width: project.score }} /></div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -187,3 +189,30 @@ export default function Home() {
     </main>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
