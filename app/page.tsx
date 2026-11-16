@@ -36,26 +36,39 @@ export default function Home() {
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
   const [notice, setNotice] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
-  function sendMessage(event: FormEvent<HTMLFormElement>) {
+  async function sendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const text = draft.trim();
-    if (!text) return;
+    if (!text || isSending) return;
 
-    setMessages((current) => [...current, { sender: "You", text }]);
+    const userMessage = { sender: "You", text };
+    setMessages((current) => [...current, userMessage]);
     setDraft("");
+    setIsSending(true);
+    setNotice("Aoi is thinking...");
 
-    const lowerText = text.toLowerCase();
-    const reply = lowerText.includes("task")
-      ? `There are ${tasks.filter((task) => task.state !== "done").length} unfinished demo tasks. You can mark one done from the task list.`
-      : lowerText.includes("project")
-        ? `There are ${projects.length} sample projects in this workspace. Project data is currently local demo data.`
-        : "Got it! This is a simulated demo reply. Real AI responses will be added when we connect an AI provider.";
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
 
-    window.setTimeout(() => {
-      setMessages((current) => [...current, { sender: "Aoi", text: reply }]);
-      setActivity((current) => [`You sent a message to Aoi: “${text.slice(0, 48)}${text.length > 48 ? "…" : ""}”`, ...current].slice(0, 5));
-    }, 350);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to send message");
+
+      setMessages((current) => [...current, { sender: "Aoi", text: data.reply }]);
+      setActivity((current) => [`You asked Aoi: “${text.slice(0, 48)}${text.length > 48 ? "…" : ""}”`, ...current].slice(0, 5));
+      setNotice("");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      setMessages((current) => [...current, { sender: "Aoi", text: `Something went wrong: ${message}` }]);
+      setNotice("Chat failed. Demo AI may not be configured yet.");
+    } finally {
+      setIsSending(false);
+    }
   }
 
   function completeTask(title: string) {
@@ -161,7 +174,7 @@ export default function Home() {
             </div>
             <form className="composer" onSubmit={sendMessage}>
               <input aria-label="Message Aoi" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Ask about tasks or projects…" />
-              <button type="submit" disabled={!draft.trim()}>Send</button>
+              <button type="submit" disabled={!draft.trim() || isSending}>{isSending ? "Sending..." : "Send"}</button>
             </form>
           </div>
         </div>
